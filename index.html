@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Robo Butt — $ROBOBUTT</title>
+<meta name="description" content="Robo Butt. One robot. One talent. Tap him and he dances.">
+<link rel="icon" href="assets/coin.png">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Trebuchet MS", "Comic Sans MS", system-ui, sans-serif;
+    background: radial-gradient(ellipse at 50% 30%, #2b1a4d 0%, #12081f 70%);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    user-select: none;
+  }
+  header { text-align: center; padding: 28px 16px 8px; }
+  header .coin-img {
+    width: 84px; height: 84px; border-radius: 50%;
+    border: 3px solid #ffb300;
+    box-shadow: 0 0 24px rgba(255,179,0,.55);
+  }
+  h1 {
+    font-size: clamp(2.4rem, 9vw, 4rem);
+    letter-spacing: 2px;
+    margin-top: 10px;
+    background: linear-gradient(180deg, #ffe082, #ff8f00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 4px 0 rgba(0,0,0,.25);
+  }
+  .ticker {
+    display: inline-block;
+    margin-top: 8px;
+    background: #ffb300; color: #1a0f00;
+    font-weight: bold; padding: 6px 18px; border-radius: 999px;
+    letter-spacing: 1px;
+  }
+  .tagline { margin-top: 10px; opacity: .85; font-size: 1rem; }
+
+  #stage {
+    position: relative;
+    width: min(92vw, 460px);
+    aspect-ratio: 1;
+    margin: 18px auto 6px;
+    cursor: pointer;
+    border-radius: 24px;
+    background: radial-gradient(circle at 50% 62%, rgba(120,80,255,.28), rgba(0,0,0,0) 65%);
+    touch-action: manipulation;
+  }
+  #stage video {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+  }
+  #stage .hint {
+    position: absolute; bottom: 6px; left: 0; right: 0;
+    text-align: center; font-size: .85rem; opacity: .6;
+    pointer-events: none;
+  }
+  #stage:active { transform: scale(.97); }
+  #stage { transition: transform .08s; }
+
+  #quip {
+    min-height: 2.2em;
+    font-size: 1.15rem; font-weight: bold;
+    color: #ffe082; text-align: center;
+    padding: 0 20px; margin-top: 4px;
+  }
+
+  #moves {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    justify-content: center;
+    padding: 14px 16px 6px;
+    max-width: 560px;
+  }
+  #moves button {
+    font-family: inherit;
+    font-size: 1rem; font-weight: bold;
+    padding: 12px 20px;
+    border: none; border-radius: 999px;
+    background: linear-gradient(180deg, #7c4dff, #512da8);
+    color: #fff; cursor: pointer;
+    box-shadow: 0 4px 0 #2a1660, 0 6px 14px rgba(0,0,0,.4);
+    transition: transform .08s;
+    touch-action: manipulation;
+  }
+  #moves button:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a1660; }
+  #moves button.active { background: linear-gradient(180deg, #ffb300, #ff8f00); box-shadow: 0 4px 0 #a35400, 0 6px 14px rgba(0,0,0,.4); }
+
+  .counter {
+    margin-top: 10px; font-size: .95rem; opacity: .8;
+  }
+  .counter b { color: #ffb300; font-size: 1.2rem; }
+
+  .coin-card {
+    margin: 26px 16px 10px;
+    max-width: 560px; width: calc(100% - 32px);
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,179,0,.35);
+    border-radius: 18px;
+    padding: 20px;
+  }
+  .coin-card h2 { font-size: 1.3rem; margin-bottom: 10px; color: #ffe082; }
+  .coin-card p { line-height: 1.55; opacity: .92; margin-bottom: 10px; }
+  .coin-card .row { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,.1); font-size: .95rem; }
+  .coin-card .row span:first-child { opacity: .65; }
+  .coin-card .soon { color: #ffb300; font-weight: bold; }
+
+  footer { margin: 18px 0 34px; opacity: .5; font-size: .8rem; text-align: center; padding: 0 16px; }
+
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
+  .pop { animation: pop .3s ease; }
+</style>
+</head>
+<body>
+
+<header>
+  <img class="coin-img" src="assets/coin.png" alt="Robo Butt coin art">
+  <h1>ROBO BUTT</h1>
+  <div class="ticker">$ROBOBUTT</div>
+  <p class="tagline">One robot. One talent. Tap him.</p>
+</header>
+
+<div id="stage" title="Tap to make him dance">
+  <video id="dancer" muted loop playsinline autoplay preload="auto" poster="assets/hero_1024.png"></video>
+  <div class="hint">tap the robot</div>
+</div>
+
+<div id="quip">He is warming up his cheeks.</div>
+
+<div id="moves"></div>
+
+<div class="counter">Butt shakes served: <b id="count">0</b></div>
+
+<div class="coin-card">
+  <h2>The coin</h2>
+  <p>Robo Butt is a robot with a single superpower: dancing with his butt. No roadmap. No utility. Just cheeks. Every tap makes him shake, and every shake is recorded above for posterity.</p>
+  <div class="row"><span>Name</span><span>Robo Butt</span></div>
+  <div class="row"><span>Ticker</span><span>$ROBOBUTT</span></div>
+  <div class="row"><span>Chain</span><span>Solana</span></div>
+  <div class="row"><span>Contract</span><span class="soon">coming soon</span></div>
+</div>
+
+<footer>Rendered in Blender. Powered by butt.</footer>
+
+<script>
+const DANCES = [
+  { id: "butt_shake", label: "Butt Shake", quips: ["Certified cheek shaker.", "The cheeks do not lie.", "Shake level: critical."] },
+  { id: "twerk", label: "Twerk", quips: ["He twerks. You watch. Everybody wins.", "Zero utility. Maximum twerk.", "Twerk first, ask questions later."] },
+  { id: "booty_spin", label: "Booty Spin", quips: ["360 degrees of butt.", "Now with extra spin.", "He saw your portfolio and spun anyway."] },
+  { id: "butt_bounce", label: "Butt Bounce", quips: ["Bounce house has nothing on this.", "Gravity is optional.", "Boing."] },
+  { id: "wave_pop", label: "Wave Pop", quips: ["The wave ends where it should.", "A wave, then a pop. Classic.", "Smooth criminal, but butt."] },
+];
+const IDLE_QUIPS = ["He is warming up his cheeks.", "Tap him. He likes it.", "The butt chooses the dancer."];
+
+const video = document.getElementById("dancer");
+const quipEl = document.getElementById("quip");
+const movesEl = document.getElementById("moves");
+const countEl = document.getElementById("count");
+const stage = document.getElementById("stage");
+
+let current = -1;
+let shakes = 0;
+try { shakes = parseInt(localStorage.getItem("robo_butt_shakes") || "0", 10); } catch (e) {}
+countEl.textContent = shakes;
+
+DANCES.forEach(d => { const v = document.createElement("video"); v.preload = "auto"; v.src = "assets/" + d.id + ".webm"; });
+
+function setQuip(t) {
+  quipEl.textContent = t;
+  quipEl.classList.remove("pop");
+  void quipEl.offsetWidth;
+  quipEl.classList.add("pop");
+}
+
+function dance(i) {
+  if (i === current) {
+    video.currentTime = 0;
+  } else {
+    current = i;
+    video.src = "assets/" + DANCES[i].id + ".webm";
+    video.play().catch(() => {});
+  }
+  const d = DANCES[i];
+  setQuip(d.quips[Math.floor(Math.random() * d.quips.length)]);
+  shakes++;
+  countEl.textContent = shakes;
+  try { localStorage.setItem("robo_butt_shakes", String(shakes)); } catch (e) {}
+  document.querySelectorAll("#moves button").forEach((b, bi) => b.classList.toggle("active", bi === i));
+}
+
+DANCES.forEach((d, i) => {
+  const b = document.createElement("button");
+  b.textContent = d.label;
+  b.addEventListener("click", e => { e.stopPropagation(); dance(i); });
+  movesEl.appendChild(b);
+});
+
+stage.addEventListener("click", () => {
+  let i = Math.floor(Math.random() * DANCES.length);
+  if (i === current) i = (i + 1) % DANCES.length;
+  dance(i);
+});
+
+video.addEventListener("error", () => setQuip(IDLE_QUIPS[Math.floor(Math.random() * IDLE_QUIPS.length)]), true);
+
+dance(0);
+</script>
+</body>
+</html>
