@@ -60,10 +60,9 @@
     object-fit: contain;
     pointer-events: none;
   }
-  #stage .hint {
-    position: absolute; bottom: 6px; left: 0; right: 0;
+  .hint {
     text-align: center; font-size: .85rem; opacity: .6;
-    pointer-events: none;
+    margin-top: 2px; pointer-events: none;
   }
   #stage:active { transform: scale(.97); }
   #stage { transition: transform .08s; }
@@ -131,8 +130,8 @@
 
 <div id="stage" title="Tap to make him dance">
   <video id="dancer" muted loop playsinline autoplay preload="auto" poster="assets/hero_1024.png"></video>
-  <div class="hint">tap the robot</div>
 </div>
+<div class="hint">tap the robot</div>
 
 <div id="quip">He is warming up his cheeks.</div>
 
@@ -162,6 +161,7 @@ const DANCES = [
 const IDLE_QUIPS = ["He is warming up his cheeks.", "Tap him. He likes it.", "The butt chooses the dancer."];
 
 const video = document.getElementById("dancer");
+const VEXT = (() => { const t = document.createElement("video"); return (t.canPlayType && t.canPlayType('video/webm; codecs="vp9"')) ? "webm" : "mp4"; })();
 const quipEl = document.getElementById("quip");
 const movesEl = document.getElementById("moves");
 const countEl = document.getElementById("count");
@@ -172,7 +172,7 @@ let shakes = 0;
 try { shakes = parseInt(localStorage.getItem("robo_butt_shakes") || "0", 10); } catch (e) {}
 countEl.textContent = shakes;
 
-DANCES.forEach(d => { const v = document.createElement("video"); v.preload = "auto"; v.src = "assets/" + d.id + ".webm"; });
+DANCES.forEach(d => { const v = document.createElement("video"); v.preload = "auto"; v.src = "assets/" + d.id + "." + VEXT; });
 
 function setQuip(t) {
   quipEl.textContent = t;
@@ -186,7 +186,7 @@ function dance(i) {
     video.currentTime = 0;
   } else {
     current = i;
-    video.src = "assets/" + DANCES[i].id + ".webm";
+    video.src = "assets/" + DANCES[i].id + "." + VEXT;
     video.play().catch(() => {});
   }
   const d = DANCES[i];
